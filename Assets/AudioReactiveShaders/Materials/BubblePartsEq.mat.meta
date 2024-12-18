@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 758b9a649928f05449699f61d5f80861
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Materials/BubblePartsEq.mat
+  uploadId: 673368

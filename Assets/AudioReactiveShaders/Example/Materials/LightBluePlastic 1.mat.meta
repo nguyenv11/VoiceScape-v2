@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b4d4590a0c5d4884585b3598266b96d8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Materials/LightBluePlastic 1.mat
+  uploadId: 673368

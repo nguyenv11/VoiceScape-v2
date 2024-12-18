@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 093f47476c9f69a4ab4a7716882c141d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Prefabs/Stage.prefab
+  uploadId: 673368

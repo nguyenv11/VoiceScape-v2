@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 86b6cfea47213d04d8ff86dabed3a0aa
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Prefabs/Player.prefab
+  uploadId: 673368

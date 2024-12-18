@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d6669bac6020913489556f4945a1a09d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Prefabs/DancingBubles.prefab
+  uploadId: 673368

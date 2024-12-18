@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8fbb0943afc75c04f95ac8b8e9523144
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Materials/Fire.mat
+  uploadId: 673368

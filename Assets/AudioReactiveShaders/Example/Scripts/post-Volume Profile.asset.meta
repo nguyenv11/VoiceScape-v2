@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 182236b89e0e20b42aa75a61e3381457
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Scripts/post-Volume Profile.asset
+  uploadId: 673368

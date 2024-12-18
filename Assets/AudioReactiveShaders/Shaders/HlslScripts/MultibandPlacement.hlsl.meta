@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d8ffbab9c6a7ea24e8305af9faba2ae7
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Shaders/HlslScripts/MultibandPlacement.hlsl
+  uploadId: 673368

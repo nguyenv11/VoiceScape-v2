@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 81c007ee7336b7c40965a2165560559a
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Scenes/SampleScene.unity
+  uploadId: 673368

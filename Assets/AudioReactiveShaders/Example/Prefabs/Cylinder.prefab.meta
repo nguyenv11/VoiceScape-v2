@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 32ddcc973d6230242acfb4045da8caba
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Prefabs/Cylinder.prefab
+  uploadId: 673368

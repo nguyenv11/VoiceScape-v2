@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 52ddec1689ba6214692c1b547346fe1c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: eca998df003b5744a850927dd50a06cd, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Scripts/MusicSpectrumReader.cs
+  uploadId: 673368

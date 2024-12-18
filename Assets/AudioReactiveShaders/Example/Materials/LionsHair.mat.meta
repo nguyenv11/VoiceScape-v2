@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1db34cdbb100c5443847b150f498a206
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Materials/LionsHair.mat
+  uploadId: 673368

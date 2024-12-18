@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 4f5d4ce7edab3234b9ff3aa542f0b5e5
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 60072b568d64c40a485e0fc55012dc9f, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Shaders/Subgraphs/InnerQuadGenerator.shadersubgraph
+  uploadId: 673368

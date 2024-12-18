@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4640f4aa5d16bf347a4a1bd72e3cfd2f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Materials/ElectricRayEq.mat
+  uploadId: 673368

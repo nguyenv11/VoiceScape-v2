@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8280bf312f0305d4095ce2b35591477e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Example/Prefabs/lowPollyHand.prefab
+  uploadId: 673368

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 25277943e1eaf6f4c93ee7f9b2216254
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Materials/CenteredEq.mat
+  uploadId: 673368

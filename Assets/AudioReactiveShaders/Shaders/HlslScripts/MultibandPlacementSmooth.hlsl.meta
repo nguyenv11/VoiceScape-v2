@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 59cf4808839640f46b9be29977bd46f9
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Shaders/HlslScripts/MultibandPlacementSmooth.hlsl
+  uploadId: 673368

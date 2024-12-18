@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 707d0be75e070504793b08089abf8987
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 378b4d784d55b0f46ae9ccb347018836, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284967
+  packageName: Audio Reactive Shaders
+  packageVersion: 1.2.1
+  assetPath: Assets/AudioReactiveShaders/Scripts/DinamicBandsAudioDataInterpreter.cs
+  uploadId: 673368
