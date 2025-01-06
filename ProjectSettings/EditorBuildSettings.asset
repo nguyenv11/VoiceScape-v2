@@ -54,6 +54,7 @@ EditorBuildSettings:
     path: "Assets/Samples/Meta XR Interaction \u200BSDK/71.0.0/Example Scenes/UISetExamples.unity"
     guid: 07e3686372a704147b219707ee3c6f62
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 5d13d68aa828f754ebbfb1fcea1a891a, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c19f33624d741ec479b05339b8fbe358, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e2c8dc84d9925c848a59358afc740ce3, type: 2}
