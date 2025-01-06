@@ -1,0 +1,1 @@
+Y:\GitHub\VoiceScape-v2\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\Debug\70w5o0e2\obj\arm64-v8a
