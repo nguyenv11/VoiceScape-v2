@@ -101,17 +101,19 @@ public class MPMAudioAnalyzer : MonoBehaviour
     private float debugMaxAmplitude = 0f;
     private int samplesProcessed = 0;
     private int peaksFound = 0;
-    private List<float> recentFrequencies = new List<float>();
+    [System.NonSerialized] private List<float> recentFrequencies = new List<float>();
     private const int MAX_RECENT_FREQUENCIES = 10;
+
+    [System.NonSerialized] 
     private DebugData currentDebugData;
 
     // Private buffers
     private AudioSource audioSource;
-    private float[] audioBuffer;
-    private float[] nsdfBuffer;
-    private float[] lastFrequencies = new float[5];
+    [System.NonSerialized] private float[] audioBuffer;
+    [System.NonSerialized] private float[] nsdfBuffer;
+    [System.NonSerialized] private float[] lastFrequencies;  // Will initialize with medianWindowSize
     private int frequencyIndex = 0;
-    private Queue<float> amplitudeHistory = new Queue<float>();
+    [System.NonSerialized] private Queue<float> amplitudeHistory = new Queue<float>();
     private const int AMPLITUDE_HISTORY_LENGTH = 10;
 
     void Start()
@@ -161,6 +163,7 @@ public class MPMAudioAnalyzer : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         audioBuffer = new float[bufferSize];
         nsdfBuffer = new float[bufferSize];
+        lastFrequencies = new float[medianWindowSize];  // Initialize with window size
 
         for (int i = 0; i < AMPLITUDE_HISTORY_LENGTH; i++)
         {
@@ -428,7 +431,7 @@ public class MPMAudioAnalyzer : MonoBehaviour
 
         currentDebugData.selectedPeakIndex = selectedPeakIndex;
 
-       // Parabolic interpolation
+        // Parabolic interpolation
         float alpha = nsdfBuffer[selectedPeakIndex - 1];
         float beta = nsdfBuffer[selectedPeakIndex];
         float gamma = nsdfBuffer[selectedPeakIndex + 1];
@@ -443,38 +446,58 @@ public class MPMAudioAnalyzer : MonoBehaviour
         return Mathf.Clamp(frequency, minFrequency, maxFrequency);
     }
 
-    private void UpdateFrequency(float rawFrequency)
+    private float UpdateFrequency(float rawFrequency)
     {
-        // Add octave stability check
-        float lastFreq = lastFrequencies.Length > 0 ? lastFrequencies[frequencyIndex] : rawFrequency;
-        if (lastFreq > 0)
+        // 1. First add new frequency to history
+        lastFrequencies[frequencyIndex] = rawFrequency;
+        frequencyIndex = (frequencyIndex + 1) % medianWindowSize;
+
+        // 2. Calculate median
+        float medianFreq = GetMedianFrequency();
+
+        // 3. Check for octave stability
+        if (Frequency > 0)  // If we have a previous frequency
         {
-            // Check if new frequency is close to an octave jump
-            while (rawFrequency > lastFreq * 1.8f) // If more than ~1.8x higher
-                rawFrequency *= 0.5f;  // Drop an octave
-            while (rawFrequency < lastFreq * 0.6f) // If less than ~0.6x lower
-                rawFrequency *= 2.0f;  // Raise an octave
+            float ratio = medianFreq / Frequency;
+            
+            // Prevent octave jumps if change is too sudden
+            if (Mathf.Abs(ratio - 1f) > jumpThreshold)
+            {
+                // Check if it's likely an octave jump
+                while (medianFreq > Frequency * (1f + octaveStabilityThreshold))
+                {
+                    medianFreq *= 0.5f;  // Drop an octave
+                }
+                while (medianFreq < Frequency * (1f - octaveStabilityThreshold))
+                {
+                    medianFreq *= 2.0f;  // Raise an octave
+                }
+            }
         }
-        float processedFrequency = useKeyFrequencies ? 
-            SnapToNearestKeyFrequency(rawFrequency) : 
-            rawFrequency;
 
-        // Update frequency history
-        lastFrequencies[frequencyIndex] = processedFrequency;
-        frequencyIndex = (frequencyIndex + 1) % lastFrequencies.Length;
-        Frequency = MedianFrequency();
-
-        // Update recent frequencies for debugging
-        recentFrequencies.Add(Frequency);
-        if (recentFrequencies.Count > MAX_RECENT_FREQUENCIES)
+        // 4. Apply smoothing
+        float smoothedFreq = Mathf.Lerp(Frequency, medianFreq, frequencySmoothing);
+            
+        // 5. Snap to key frequencies if enabled
+        if (useKeyFrequencies)
         {
-            recentFrequencies.RemoveAt(0);
+            smoothedFreq = SnapToNearestKeyFrequency(smoothedFreq);
+        }
+            
+        // 6. Debug logging
+        if (showDetailedDebug)
+        {
+            Debug.Log($"Pitch: Raw={rawFrequency:F1}, Median={medianFreq:F1}, Smoothed={smoothedFreq:F1}");
         }
 
         if (logPitchData)
         {
-            Debug.Log($"[MPM] Freq={Frequency:F1}Hz, Conf={Confidence:F2}, Clear={Clarity:F2}");
+            Debug.Log($"[MPM] Freq={smoothedFreq:F1}Hz, Conf={Confidence:F2}, Clear={Clarity:F2}");
         }
+
+        // 7. Update and return
+        Frequency = smoothedFreq;
+        return smoothedFreq;
     }
 
     private float SnapToNearestKeyFrequency(float frequency)
@@ -494,12 +517,15 @@ public class MPMAudioAnalyzer : MonoBehaviour
         return closest;
     }
 
-    private float MedianFrequency()
+    private float GetMedianFrequency()
     {
-        float[] sortedFreqs = new float[lastFrequencies.Length];
+        // Create a sorted copy of recent frequencies
+        float[] sortedFreqs = new float[medianWindowSize];
         lastFrequencies.CopyTo(sortedFreqs, 0);
         System.Array.Sort(sortedFreqs);
-        return sortedFreqs[sortedFreqs.Length / 2];
+
+        // Return middle value
+        return sortedFreqs[medianWindowSize / 2];
     }
 
     private void UpdateDebugInfo()

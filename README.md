@@ -1,103 +1,215 @@
-# Voice Driven World Interaction
+# VOX Interaction Model Design
+
+## Overview
+
+
+
+## Musical Design Philosophy
+
+The experience uses voice input to create a novel form of musical interaction where spatial position directly maps to musical pitch. This creates an intuitive relationship between the player's voice, their movement in the virtual space, and musical progression.
+
+### Core Musical-Spatial Mapping
+
+The system maps musical frequencies to physical heights using logarithmic scaling:
+- Lower frequencies (deeper notes) are positioned closer to the ground
+- Higher frequencies (higher notes) are positioned higher in the space
+- Height mapping follows standard musical intervals (logarithmic scaling)
+- Base height (4m) corresponds to approximately 100Hz
+- Maximum height (20m) corresponds to notes above C4 (middle C)
+
+### Musical Sequence Design
+
+The experience guides players through a meditative C minor progression:
+
+```
+C3  (130.81 Hz) → Base position
+Eb3 (155.56 Hz) → Slightly higher
+G3  (196.00 Hz) → Middle height
+C4  (261.63 Hz) → Peak height
+G3  (196.00 Hz) → Return to middle
+Eb3 (155.56 Hz) → Lower again
+C3  (130.81 Hz) → Return to base
+```
+
+This sequence was chosen to:
+- Start with comfortable, achievable notes
+- Create a natural arc of rising and falling
+- Use musically related intervals
+- Return to the starting note for closure
+
+## Player Interaction
+
+### Voice-Height Mapping
+
+Players control their height through voice pitch:
+1. Voice frequency is analyzed in real-time using the McLeod Pitch Method
+2. Detected frequency is mapped to a target height using logarithmic scaling
+3. Player's vertical position smoothly transitions to match their voice pitch
+4. Visual feedback shows current and target heights
+5. Confidence metrics ensure stable pitch detection
+
+### Musical Pickup Collection
+
+Musical pickups are placed at heights corresponding to their frequencies:
+1. Each pickup represents a note in the sequence
+2. Pickups are positioned ahead of the player in a path
+3. Players must match the pickup's pitch to reach its height
+4. Visual and audio feedback indicate proximity to correct pitch
+5. Successful collection requires maintaining pitch for a brief duration
+
+### Height Calculation
+
+```
+Height = baseHeight + (log(frequency) - log(minFreq)) / (log(maxFreq) - log(minFreq)) * (maxHeight - baseHeight)
+
+Where:
+- baseHeight = 4 meters (height at 100 Hz)
+- maxHeight = 20 meters (height at maximum frequency)
+- minFreq = 80 Hz (lowest supported note)
+- maxFreq = 300 Hz (highest supported note)
+```
+
+## Visual Feedback
+
+### Pickup Visualization
+- Pickup color indicates sequence position
+- Opacity changes based on current/target status
+- Size pulses subtly to draw attention
+- Forward path shows upcoming sequence
+- Height lines show pitch targets
+
+### Player Feedback
+- Current pitch shown as floating sphere
+- Color gradient indicates pitch accuracy
+- Particle effects for successful matches
+- Distance markers show height targets
+- Frequency and confidence displays
+
+## Implementation Details
+
+### Key Components
+
+1. **MPMAudioAnalyzer**
+   - Real-time pitch detection
+   - Frequency confidence calculation
+   - Amplitude envelope following
+
+2. **PlayerMovementController**
+   - Voice-to-height mapping
+   - Smooth height transitions
+   - Ground tracking
+   - Collision detection
+
+3. **PickupManager**
+   - Musical sequence management
+   - Pickup spawning and positioning
+   - Collection detection
+   - Progress tracking
+
+### Configuration Parameters
+
+```csharp
+[Header("Height Mapping")]
+float baseHeight = 4f;     // Height at 100 Hz
+float maxHeight = 20f;     // Maximum height
+float minFreq = 80f;       // Lowest note (below C3)
+float maxFreq = 300f;      // Highest note (above C4)
+
+[Header("Musical Sequence")]
+MusicalPickup[] sequence = {
+    new MusicalPickup { frequency = 130.81f }, // C3
+    new MusicalPickup { frequency = 155.56f }, // Eb3
+    new MusicalPickup { frequency = 196.00f }, // G3
+    new MusicalPickup { frequency = 261.63f }, // C4
+    new MusicalPickup { frequency = 196.00f }, // G3
+    new MusicalPickup { frequency = 155.56f }, // Eb3
+    new MusicalPickup { frequency = 130.81f }  // C3
+};
+```
+
+
+### Player Control Details
+
+Two inputs control the character movement.
+
+1. Audio of the user's voice  
+    a. Sensor: device microphone  
+    b. Controls: amplitude and frequency
+    c. Mappings:  
+    1. Amplitude drives elevation on the y axis with an envelope follower, feature a fairly rapid attack and very slow logarithmic release </i>
+    2. Frequency modulates the y axis elevation within the "pitch fly zone", with a more responsive envelope.
+2. Tilt of the headset 
+    a. Sensor: gyroscope  
+    b. Controls: azimuth plane  
+    c. Mappings: forward, backward, left, right moves character slowly in that direction, 360 degrees on the azimuth plane </i>
 
 
 ## Scene Hierarchy and Components
 
 ```
-UnityAudioProto*
+UnityAudioProto2
 ├── AudioManager
-│   ├── Audio Source
-│   └── MPM Audio Analyzer
-├── Directional Light
-└── [BuildingBlock] Camera Rig
-    └── TrackingSpace
-        └── CenterEyeAnchor
-            └── PitchVisualizer
-                ├── CurrentPitchSphere
-                │   └── Sphere
-                ├── TargetPitchSphere
-                │   └── Sphere
-                └── Labels
-                    ├── MinFrequencyLabel
-                    ├── MaxFrequencyLabel
-                    ├── FrequencyLabel
-                    └── ConfidenceLabel
+│   └── MPMAudioAnalyzer (Pitch detection and voice processing)
+├── [BuildingBlock] Camera Rig
+│   ├── Player (Movement controller)
+│   └── TrackingSpace
+│       ├── CenterEyeAnchor
+│       │   └── PitchVisualizer
+│       ├── LeftEyeAnchor
+│       └── RightEyeAnchor
+├── TerrainManager (Procedural terrain generation)
+├── LandmarkManager (Dynamic reference objects)
+├── ReferenceGrid
+├──PickupManager (Musical progression system) [In progress]
+│   ├── PickupManager 
 ```
+### Core Systems
 
-### Component Descriptions
+1. **Voice Analysis (MPMAudioAnalyzer)**
+   - Real-time pitch detection using McLeod Pitch Method
+   - Amplitude envelope following
+   - Frequency and clarity analysis
 
-#### MPM Audio Analyzer
-Primary component for pitch detection and audio analysis. Configurable parameters:
-- **Analysis Configuration**
-  - Buffer Size: 2048 samples
-  - Clarity Threshold: 0.71
-  - Noise Floor: 0.001
-  - Use Key Frequencies: true/false
+2. **Movement System (PlayerMovementController)**
+   - Voice-driven elevation control
+   - Pitch-based height modulation
+   - Head-tilt based directional control
+   - ADSR envelope for smooth transitions
 
-- **Voice Range**
-  - Min Frequency: 100 Hz
-  - Max Frequency: 600 Hz
+3. **Terrain Generation (TerrainManager)**
+   - Procedural mesh generation
+   - Dynamic chunk loading
+   - Collision detection
+   - Performance-optimized updates
 
-- **Debug Options**
-  - Debug Mode: Enable detailed logging
-  - Show Detailed Debug: Show extended debug info
-  - Log Pitch Data: Log frequency and confidence
-  - Visualize Buffers: Show buffer data
+4. **Landmark System (LandmarkManager)**
+   - Dynamic spawn system
+   - Distance-based visual feedback
+   - Cardinal direction markers
+   - Spatial reference points
 
-Dependencies:
-- Requires AudioSource component
-- Outputs: Frequency, Confidence, Clarity, Amplitude
+5. **Musical Progression (PickupManager)**
+   - C minor meditation sequence
+   - Visual waypoint system
+   - Audio feedback (each pickup emits the target note)
+   - Progress tracking (unclear how this is to be implemented)
 
-#### PitchVisualizer
-Visual feedback system for pitch matching. Parameters:
-- **Layout**
-  - Visualizer Distance: 2m from camera
-  - Max Vertical Angle: 20 degrees
-  - Vertical Offset: -0.2m
-  - Sphere Base Scale: 0.05
 
-- **Visualization Settings**
-  - Target Frequency: 130.81 Hz (C3)
-  - Frequency Tolerance: 5 Hz
 
-- **Colors**
-  - Target Color: Green (0, 1, 0, 0.8)
-  - Normal Color: Blue (0, 0.5, 1, 0.8)
-  - Close Color: Yellow (1, 1, 0, 0.8)
-  - Matched Color: Red (1, 0, 0, 1)
+## Setup Requirements
 
-- **Text Customization**
-  - Font Size: 10
-  - Label Offset: 0.15
-  - Label Size: 0.02
+### Hardware
+- Meta Quest or similar VR headset
+- Microphone input
+- Stereo audio output
 
-Dependencies:
-- Requires MPMAudioAnalyzer reference
-- Requires TextMeshPro for labels
-- Requires sphere primitives for visual feedback
+### Software Dependencies
+- Unity 2022.3 or later
+- Meta XR SDK
+- Universal Render Pipeline (URP)
+- TextMeshPro
 
-### Installation Requirements
 
-1. Unity Packages:
-   - TextMeshPro
-   - Universal Render Pipeline (URP)
-   - XR Interaction Toolkit
-   - Meta XR SDK
-
-2. Scene Setup:
-   ```
-   1. Create base scene structure
-   2. Add AudioManager with MPMAudioAnalyzer
-   3. Add PitchVisualizer under CenterEyeAnchor
-   4. Create sphere primitives
-   5. Configure materials and shaders
-   6. Set up text components
-   ```
-
-3. Material Requirements:
-   - URP/Lit shader for spheres
-   - Transparent materials for feedback
-   - TextMeshPro font assets
 
 ## System Architecture
 
@@ -135,32 +247,6 @@ graph TD
     end
 ```
 
-## Implementation Phases
-
-```mermaid
-gantt
-    title Development Timeline
-    dateFormat  YYYY-MM-DD
-    section Audio Analysis
-    MPM Debug & Fix            :a1, 2025-01-05, 2d
-    Frequency Detection        :a2, 2025-01-05, 2d
-    Amplitude Analysis         :a3, 2025-01-05, 2d
-
-    section Visual Feedback
-    Basic Pitch Display        :v4, 2025-01-05, 2d
-    Color System              :v5, 2025-01-05, 2d
-    Accuracy Visualization    :v6, 2025-01-05, 2d
-
-    section Movement
-    Envelope Follower         :m1, after a3, 1d
-    Physics Integration       :m2, after m1, 1d
-    Movement Controls         :m3, after m2, 1d
-
-    section Gameplay
-    Pickup System             :g1, after m3, 1d
-    Musical Sequence          :g2, after g1, 1d
-    Polish & Testing          :g3, after g2, 1d
-```
 
 ## Core Systems Detail
 
@@ -304,3 +390,30 @@ graph TD
    - Success particles
    - Collection effects
    - Level progress
+
+## Implementation Phases
+
+```mermaid
+gantt
+    title Development Timeline
+    dateFormat  YYYY-MM-DD
+    section Audio Analysis
+    MPM Debug & Fix            :a1, 2025-01-05, 2d
+    Frequency Detection        :a2, 2025-01-05, 2d
+    Amplitude Analysis         :a3, 2025-01-05, 2d
+
+    section Visual Feedback
+    Basic Pitch Display        :v4, 2025-01-05, 2d
+    Color System              :v5, 2025-01-05, 2d
+    Accuracy Visualization    :v6, 2025-01-05, 2d
+
+    section Movement
+    Envelope Follower         :m1, after a3, 1d
+    Physics Integration       :m2, after m1, 1d
+    Movement Controls         :m3, after m1, 1d
+
+    section Gameplay
+    Pickup System             :g1, after m1, 1d
+    Musical Sequence          :g2, after g1, 1d
+    Polish & Testing          :g3, after g2, 1d
+```
