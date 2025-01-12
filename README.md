@@ -1,43 +1,87 @@
-# VOX Interaction Model Design
+# VOXR - Meditative Singing Design Spec
 
 ## Overview
+VOXR is designed to motivate people to sing in a meditative way, yielding therarpuetic benefits, such as a relaxed and euphoric state by slowing respiration, resonating the body and stimulating the vagus nerve.
+
+## Core Interaction
+
+Two inputs control the character movement.
+
+1. Audio of the user's voice  
+    a. Sensor: device microphone  
+    b. Controls: amplitude and frequency
+    c. Mappings:  
+    1. Amplitude drives elevation on the y axis with an envelope follower, feature a fairly rapid attack and very slow logarithmic release </i>
+    2. Frequency modulates the y axis elevation within the "pitch fly zone", with a more responsive envelope.
+2. Tilt of the headset 
+    a. Sensor: gyroscope  
+    b. Controls: azimuth plane  
+    c. Mappings: forward, backward, left, right moves character slowly in that direction, 360 degrees on the azimuth plane </i>
+
+## Narrative Overview
+1. Vocal Calibration / Onboarding - guide and measure player's voice.
+2. 3rd POV MR - more familiarization and practice, big transition
+3. 1st POV MR - fly with your voice to follow the guided melody
+
+## Scene 1: 3rd Person [MR] Vocal Calibration / Onboarding
+
+Tutorial guides people to sing in their lowest and highest comfortable pitches.  We measure and capture to adjust gameplay accordingly.
+
+## Scene 2: 3rd Person [MR] Player Interaction
 
 
 
-## Musical Design Philosophy
+### A voice guided "golden snitch"
 
-The experience uses voice input to create a novel form of musical interaction where spatial position directly maps to musical pitch. This creates an intuitive relationship between the player's voice, their movement in the virtual space, and musical progression.
-
-### Core Musical-Spatial Mapping
-
-The system maps musical frequencies to physical heights using logarithmic scaling:
-- Lower frequencies (deeper notes) are positioned closer to the ground
-- Higher frequencies (higher notes) are positioned higher in the space
-- Height mapping follows standard musical intervals (logarithmic scaling)
-- Base height (4m) corresponds to approximately 100Hz
-- Maximum height (20m) corresponds to notes above C4 (middle C)
-
-### Musical Sequence Design
-
-The experience guides players through a meditative C minor progression:
-
-```
-C3  (130.81 Hz) → Base position
-Eb3 (155.56 Hz) → Slightly higher
-G3  (196.00 Hz) → Middle height
-C4  (261.63 Hz) → Peak height
-G3  (196.00 Hz) → Return to middle
-Eb3 (155.56 Hz) → Lower again
-C3  (130.81 Hz) → Return to base
-```
-
-This sequence was chosen to:
+Objectives
+- Gently introduce the interaction and world
 - Start with comfortable, achievable notes
-- Create a natural arc of rising and falling
-- Use musically related intervals
-- Return to the starting note for closure
+- Build suspense in the transition
 
-## Player Interaction
+The experience guides players through an exercise to continue familarization with voice control and head tilt, by guiding a "golden snitch"-like object through space to collide with objects in a musical way.
+
+The voice and head tilt controls the currentPitch sphere as the main player.  In this 3rd person POV, we guide a player object freely through the world, within the MR room's bounds on the X and Z axis.  The height is limited in Y axis by the Height Calculation parameters driven by the amplitude and pitch of the voice.  X and Z axis and driven by head tilt.
+
+### Pickup Visualization
+TBD
+
+### Height Calculation
+
+```
+Height = baseHeight + (log(frequency) - log(minFreq)) / (log(maxFreq) - log(minFreq)) * (maxHeight - baseHeight)
+
+Where:
+- baseHeight = 0.5 meter (height at 80 Hz)
+- maxHeight = 2.5 meters (height at maximum frequency)
+- minFreq = 80 Hz (lowest supported note)
+- maxFreq = 300 Hz (highest supported note)
+```
+
+
+### Scene Hierarchy and Components
+```
+UnityAudioProto2
+├── AudioManager
+│   └── MPMAudioAnalyzer (Pitch detection and voice processing)
+├── [BuildingBlock] Camera Rig
+├──PickupManager 
+│   ├── PickupManager
+├──PitchVisualizer
+│   ├── CurrentPitchSphere
+│   ├── TargetPitchSphere
+│   ├── Labels
+│   ├── PlayerControl
+├── TerrainManager
+
+```
+
+
+## Scene 3: 1st Person [VR] Player Interaction
+
+Objectives
+- Apex and payoff
+- Give sensation of flying
+- Stimulate and motivate singing
 
 ### Voice-Height Mapping
 
@@ -87,6 +131,15 @@ Where:
 
 ## Implementation Details
 
+### Musical Pickup Collection
+
+Musical pickups are placed at heights corresponding to their frequencies:
+1. Each pickup represents a note in the sequence
+2. Pickups are positioned ahead of the player in a path
+3. Players must match the pickup's pitch to reach its height
+4. Visual and audio feedback indicate proximity to correct pitch
+5. Successful collection requires maintaining pitch for a brief duration
+
 ### Key Components
 
 1. **MPMAudioAnalyzer**
@@ -127,23 +180,6 @@ MusicalPickup[] sequence = {
 };
 ```
 
-
-### Player Control Details
-
-Two inputs control the character movement.
-
-1. Audio of the user's voice  
-    a. Sensor: device microphone  
-    b. Controls: amplitude and frequency
-    c. Mappings:  
-    1. Amplitude drives elevation on the y axis with an envelope follower, feature a fairly rapid attack and very slow logarithmic release </i>
-    2. Frequency modulates the y axis elevation within the "pitch fly zone", with a more responsive envelope.
-2. Tilt of the headset 
-    a. Sensor: gyroscope  
-    b. Controls: azimuth plane  
-    c. Mappings: forward, backward, left, right moves character slowly in that direction, 360 degrees on the azimuth plane </i>
-
-
 ## Scene Hierarchy and Components
 
 ```
@@ -175,9 +211,11 @@ UnityAudioProto2
    - Pitch-based height modulation
    - Head-tilt based directional control
    - ADSR envelope for smooth transitions
+   - PlayerMovementController3rdPOV.cs is for the 3rdPOV scene
+   - PlayerMovementController.cs is for the 1stPOV scene
 
 3. **Terrain Generation (TerrainManager)**
-   - Procedural mesh generation
+   - Procedural mesh generation (perlin noise displacement)
    - Dynamic chunk loading
    - Collision detection
    - Performance-optimized updates
@@ -194,8 +232,6 @@ UnityAudioProto2
    - Audio feedback (each pickup emits the target note)
    - Progress tracking (unclear how this is to be implemented)
 
-
-
 ## Setup Requirements
 
 ### Hardware
@@ -209,9 +245,7 @@ UnityAudioProto2
 - Universal Render Pipeline (URP)
 - TextMeshPro
 
-
-
-## System Architecture
+## Audio System Architecture
 
 ```mermaid
 graph TD
@@ -415,5 +449,14 @@ gantt
     section Gameplay
     Pickup System             :g1, after m1, 1d
     Musical Sequence          :g2, after g1, 1d
-    Polish & Testing          :g3, after g2, 1d
+
+    section Final Detail
+    Polish & Testing          :g3, after g2, 3d
+    Visuals                   :g4, after g2, 3d
+    Scene Sequencing          :g5, after g2, 2d
+    Calibration               :g6, after g5, 1d
+
+    section Submission
+    Video                     :g7, after g6, 1d
+    DevPost                   :g8, after g6, 1d
 ```
