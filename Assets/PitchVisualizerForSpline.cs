@@ -2,18 +2,21 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
-public class PitchVisualizer : MonoBehaviour
+public class PitchVisualizerForSpline : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private MPMAudioAnalyzer audioAnalyzer;
     [SerializeField] private Transform currentPitchSphere;
-    [SerializeField] public Transform targetPitchSphere;
+    [SerializeField] private Transform targetPitchSphere;
+    [SerializeField] private Transform noInputTransform;
     
     [Header("Layout")]
-    [SerializeField] private float visualizerDistance = 1f;      // Distance in front
-    [SerializeField] private float maxVerticalAngle = 20f;      // Reduced angle range
-    [SerializeField] private float verticalOffset = -0.2f;      // Lower the whole visualization
+    [SerializeField]
+    public float visualizerDistance = 1f;      // Distance in front
+    [SerializeField] public float maxVerticalAngle = 20f;      // Reduced angle range
+    [SerializeField] public float verticalOffset = -0.2f;      // Lower the whole visualization
     [SerializeField] private float sphereBaseScale = 0.05f;     // Current size seems good
     
     [Header("Visual Settings")]
@@ -57,14 +60,19 @@ public class PitchVisualizer : MonoBehaviour
     [NonSerialized] private Material currentSphereMaterial;
     [NonSerialized] private Material targetMaterial;
     [NonSerialized] private Color currentColor;
+    private Camera camera1;
+    
+    public float baseHeight;
+    public float maxHeight;
 
-     private void Start()
+    private void Start()
     {
+        camera1 = Camera.main;
         if (!ValidateComponents()) return;
 
         // Get reference to camera rig once
-        cameraRig = Camera.main.transform.parent.parent;
-        
+        if (camera1 != null) cameraRig = camera1.transform.parent.parent;
+
         // Set initial fixed orientation
         transform.rotation = Quaternion.LookRotation(baseForward);
         fixedRotation = transform.rotation;
@@ -75,8 +83,8 @@ public class PitchVisualizer : MonoBehaviour
     }
     private void InitializePositions()
     {
-        // Base position in front of rig
-        Vector3 basePosition = cameraRig.position + (baseForward * visualizerDistance);
+        //Base position in front of rig
+        Vector3 basePosition = transform.parent.position + (baseForward * visualizerDistance);
         transform.position = basePosition + Vector3.up * verticalOffset;
         
         // Set target sphere position
@@ -208,12 +216,12 @@ public class PitchVisualizer : MonoBehaviour
         if (cameraRig == null) return transform.position;
         
         // Get the camera's forward direction but only on the horizontal plane
-        Vector3 cameraForward = Camera.main.transform.forward;
-        Vector3 horizontalForward = Vector3.ProjectOnPlane(cameraForward, Vector3.up).normalized;
+        // Vector3 objectForward = transform.parent.forward;
+        // Vector3 horizontalForward = Vector3.ProjectOnPlane(objectForward, Vector3.up).normalized;
         
         // Position in front of camera, maintaining fixed height
-        Vector3 position = cameraRig.position + (horizontalForward * visualizerDistance);
-        position.y = cameraRig.position.y + verticalOffset;  // Use fixed vertical offset
+        Vector3 position = transform.parent.position;
+        position.y = transform.parent.position.y + verticalOffset;  // Use fixed vertical offset
         
         return position;
     }
@@ -224,11 +232,11 @@ public class PitchVisualizer : MonoBehaviour
         float normalizedFreq = (Mathf.Log(frequency) - Mathf.Log(minFrequency)) / 
                              (Mathf.Log(maxFrequency) - Mathf.Log(minFrequency));
         float angle = Mathf.Lerp(-maxVerticalAngle, maxVerticalAngle, normalizedFreq);
-        float heightOffset = verticalOffset + Mathf.Tan(angle * Mathf.Deg2Rad) * visualizerDistance;
+        float heightOffset = verticalOffset + Mathf.Tan(angle * Mathf.Deg2Rad) + visualizerDistance;
         
-        // Position relative to rig
-        Vector3 horizontalForward = Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized;
-        return cameraRig.position + (horizontalForward * visualizerDistance) + (Vector3.up * heightOffset);
+        // Position relative to parent
+        //Vector3 horizontalForward = Vector3.ProjectOnPlane(-transform.parent.right, Vector3.up).normalized;
+        return transform.parent.position + (Vector3.up * heightOffset);
     }
 
     private void UpdateSphereVisuals()
@@ -271,9 +279,20 @@ public class PitchVisualizer : MonoBehaviour
 
     private void UpdateSpherePositions()
     {
-        if (!audioAnalyzer.IsVoiceDetected) return;
+        if (!audioAnalyzer.IsVoiceDetected)
+        {
+            currentPitchSphere.position = Vector3.SmoothDamp(
+                currentPitchSphere.position,
+                noInputTransform.position,
+                ref currentVelocity,
+                positionSmoothTime
+            );
+            
+            return;
+        }
 
         Vector3 targetPos = GetPositionForFrequency(audioAnalyzer.Frequency);
+        
         currentPitchSphere.position = Vector3.SmoothDamp(
             currentPitchSphere.position,
             targetPos,
@@ -334,9 +353,9 @@ public class PitchVisualizer : MonoBehaviour
 
     private void UpdateLabelOrientations()
     {
-        if (Camera.main == null) return;
+        if (camera1 == null) return;
 
-        Transform cameraTransform = Camera.main.transform;
+        Transform cameraTransform = camera1.transform;
         TextMeshPro[] labels = { currentFrequencyLabel, confidenceLabel, minFreqLabel, maxFreqLabel, targetFrequencyLabel };
         
         foreach (var label in labels)
